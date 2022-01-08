@@ -272,6 +272,53 @@ const MainNavigator = createDrawerNavigator(
     }
 );
 
+
+const FavoritesNavigator = createStackNavigator(
+    {
+        Favorites: { screen: Favorites }
+    },
+    {
+        defaultNavigationOptions: ({ navigation }) => ({
+            headerStyle: {
+                backgroundColor: '#5637DD'
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                color: '#fff'
+            },
+            headerLeft: <Icon
+                name='heart'
+                type='font-awesome'
+                iconStyle={styles.stackIcon}
+                onPress={() => navigation.toggleDrawer()}
+            />
+        })
+    }
+);
+
+const ReservationNavigator = createStackNavigator(
+    {
+        Reservation: { screen: Reservation }
+    },
+    {
+        defaultNavigationOptions: ({ navigation }) => ({
+            headerStyle: {
+                backgroundColor: '#5637DD'
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                color: '#fff'
+            },
+            headerLeft: <Icon
+                name='tree'
+                type='font-awesome'
+                iconStyle={styles.stackIcon}
+                onPress={() => navigation.toggleDrawer()}
+            />
+        })
+    }
+);
+
 const AppNavigator = createAppContainer(MainNavigator)
 
 class Main extends Component {
@@ -282,14 +329,11 @@ class Main extends Component {
         this.props.fetchPromotions();
         this.props.fetchPartners();
 
-        NetInfo.fetch().then(connectionInfo => {
-            (Platform.OS === 'ios')
-                ? Alert.alert('Initial Network Connectivity Type:', connectionInfo.type)
-                : ToastAndroid.show('Initial Network Connectivity Type: ' +
-                    connectionInfo.type, ToastAndroid.LONG);
-        });
-
         this.showNetInfo();
+
+        this.unsubscribeNetInfo = NetInfo.addEventListener(connectionInfo => { 
+            this.handleConnectivityChange(connectionInfo);
+        });
     }
 
     componentWillUnmount() {
@@ -303,13 +347,6 @@ class Main extends Component {
                     : ToastAndroid.show('Initial Network Connectivity Type: ' + 
                     connectionInfo.type, ToastAndroid.LONG);
             }
-
-
-        this.unsubscribeNetInfo = NetInfo.addEventListener(connectionInfo => { 
-            this.handleConnectivityChange(connectionInfo);
-        });
-
-
     }
 
 
@@ -374,53 +411,6 @@ const styles = StyleSheet.create({
         fontSize: 24
     }
 });
-
-const ReservationNavigator = createStackNavigator(
-    {
-        Reservation: { screen: Reservation }
-    },
-    {
-        defaultNavigationOptions: ({ navigation }) => ({
-            headerStyle: {
-                backgroundColor: '#5637DD'
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-                color: '#fff'
-            },
-            headerLeft: <Icon
-                name='tree'
-                type='font-awesome'
-                iconStyle={styles.stackIcon}
-                onPress={() => navigation.toggleDrawer()}
-            />
-        })
-    }
-);
-
-const FavoritesNavigator = createStackNavigator(
-    {
-        Favorites: { screen: Favorites }
-    },
-    {
-        defaultNavigationOptions: ({ navigation }) => ({
-            headerStyle: {
-                backgroundColor: '#5637DD'
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-                color: '#fff'
-            },
-            headerLeft: <Icon
-                name='heart'
-                type='font-awesome'
-                iconStyle={styles.stackIcon}
-                onPress={() => navigation.toggleDrawer()}
-            />
-        })
-    }
-);
-
 
 
 export default connect(null, mapDispatchToProps)(Main);
